@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>For My 01 🤍</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #ffe6f2, #e6f7ff);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            width: 450px;
+            margin: 70px auto;
+            position: relative;
+            z-index: 2;
+            min-height: 260px;
+        }
+
+        h2 { margin-bottom: 15px; }
+
+        button {
+            padding: 10px 18px;
+            margin: 6px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background-color: #ffc2e2;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #ff9fd0;
+            transform: scale(1.08);
+        }
+
+        img {
+            width: 210px;
+            margin-top: 15px;
+            border-radius: 15px;
+        }
+
+        .heart {
+            position: fixed;
+            bottom: -20px;
+            color: #ff7ab6;
+            animation: floatUp 6s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-110vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 id="title">Hey 🤍</h2>
+    <p id="text">Press start to see your surprises.</p>
+    <img id="gif" style="display:none;">
+    <div id="buttons">
+        <button onclick="next()">Start</button>
+    </div>
+</div>
+
+<!-- Spotify -->
+<div style="width:60%; margin: 20px auto;">
+<iframe data-testid="embed-iframe"
+style="border-radius:12px"
+src="https://open.spotify.com/embed/track/1vg0ZHaTvBwlNxLxyYrEvP?utm_source=generator"
+width="100%"
+height="352"
+frameBorder="0"
+allowfullscreen=""
+allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+loading="lazy">
+</iframe>
+</div>
+
+<script>
+let step = 0;
+
+function next() {
+    step++;
+
+    let title = document.getElementById("title");
+    let text = document.getElementById("text");
+    let gif = document.getElementById("gif");
+    let buttons = document.getElementById("buttons");
+    gif.style.display = "none";
+
+    if(step === 1){
+        title.innerText = "Question";
+        text.innerText = "Are you ready for a few surprises?";
+        buttons.innerHTML = `
+            <button onclick="next()">Yes</button>
+            <button onclick="moveNo(this)">No</button>
+        `;
+    }
+
+    else if(step === 2){
+        title.innerText = "Love message";
+        text.innerText = "I love you always, my 01. Not loud, not dramatic, just steady and sincere.";
+        gif.src = "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif";
+        gif.style.display = "block";
+        buttons.innerHTML = `<button onclick="next()">Next</button>`;
+    }
+
+    else if(step === 3){
+        title.innerText = "Flowers for you 🌸";
+        text.innerText = "Just because I want to make you smile.";
+        gif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; // FLOWERS GIF
+        gif.style.display = "block";
+        buttons.innerHTML = `
+            <button onclick="kiss()">Cute kiss cat 😽</button>
+            <button onclick="next()">Next</button>
+        `;
+    }
+
+    else if(step === 4){
+        title.innerText = "Our song 🎵";
+        text.innerText = "This song feels calm but sincere. Soft yet deep. If you think of me when it plays… I win.";
+        gif.src = "https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif";
+        gif.style.display = "block";
+        buttons.innerHTML = `<button onclick="next()">Next</button>`;
+    }
+
+    else if(step === 5){
+        title.innerText = "Playful joke 😏";
+        text.innerText = "Do you want a joke? Choose below!";
+        buttons.innerHTML = `
+            <button onclick="joke('ANO?')">ANO?</button>
+            <button onclick="joke('Ano po baby? :3')">Ano po baby? :3</button>
+        `;
+    }
+
+    else if(step === 6){
+        title.innerText = "Final surprise";
+        text.innerText = "My 01… You’ve reached the end. I just want you to know this: You are appreciated, admired, and genuinely liked. I love how you exist, the way you think, laugh, and care. Even in quiet moments, I notice you. \n\nI’m not perfect. You’re not perfect. But I want you in my life and I want to make you happy in little ways every day. Thank you for being you.";
+        gif.src = "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif";
+        gif.style.display = "block";
+        buttons.innerHTML = `<button onclick="restart()">Restart</button>`;
+    }
+}
+
+function moveNo(btn){
+    btn.style.position = "absolute";
+    btn.style.top = Math.random() * 300 + "px";
+    btn.style.left = Math.random() * 300 + "px";
+}
+
+function kiss(){
+    document.getElementById("title").innerText = "Cute kiss 😽";
+    document.getElementById("text").innerText = "Here’s a respectful but adorable kiss for you!";
+    let gif = document.getElementById("gif");
+    gif.src = "https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif";
+    gif.style.display = "block";
+}
+
+function joke(choice){
+    document.getElementById("title").innerText = "Joke time";
+    document.getElementById("text").innerText = "Question: Ano ang tawag sa pari na nakulong?\n\nAnswer: edi naholy 😏\n\nYou chose: " + choice;
+    document.getElementById("gif").src = "https://media.giphy.com/media/13borq7Zo2kulO/giphy.gif";
+    document.getElementById("gif").style.display = "block";
+    document.getElementById("buttons").innerHTML = `<button onclick="next()">Next</button>`;
+}
+
+function restart(){
+    location.reload();
+}
+
+/* floating hearts */
+setInterval(() => {
+    let heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "🤍";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 6000);
+}, 400);
+
+</script>
+
+</body>
+</html>
