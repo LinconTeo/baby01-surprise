@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Alliah Surprise 💖</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(to top, #ff9a9e, #fad0c4);
+  overflow: hidden;
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+  touch-action: manipulation;
+}
+h1 {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5em;
+  color: white;
+  text-shadow: 2px 2px 5px pink;
+  padding: 0 10px;
+}
+.message {
+  position: absolute;
+  font-size: 0.9em;
+  color: #fff;
+  background: rgba(255, 182, 193, 0.6);
+  padding: 5px 8px;
+  border-radius: 10px;
+  line-height: 1.2;
+  animation: floatOut 4s forwards;
+  white-space: nowrap;
+}
+@keyframes floatOut {
+  0% {opacity:1; transform: translateY(0);}
+  100% {opacity:0; transform: translateY(-120px);}
+}
+canvas {
+  position: absolute;
+  top:0;
+  left:0;
+}
+</style>
+</head>
+<body>
+<h1>Tap Anywhere for a BIG Surprise for Alliah! 🎉</h1>
+<canvas id="fireworks"></canvas>
+<script>
+// Fireworks setup
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.velX = Math.random()*4 - 2;
+    this.velY = Math.random()*-4 -1;
+    this.color = color;
+    this.alpha = 1;
+    this.size = Math.random()*3 + 1.5;
+  }
+  update() {
+    this.x += this.velX;
+    this.y += this.velY;
+    this.alpha -= 0.03;
+  }
+  draw() {
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+let particles = [];
+
+function explode(x, y) {
+  const colors = ['#ff5c5c','#ffbd69','#69ffb0','#69d2ff','#d469ff','#ff69b4','#ffc0cb'];
+  for(let i=0;i<30;i++){  // mobile-friendly
+    particles.push(new Particle(x, y, colors[Math.floor(Math.random()*colors.length)]));
+  }
+}
+
+function animate() {
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.update();
+    p.draw();
+    if(p.alpha<=0) particles.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// Surprise message
+const messageText = "I love you always my 01, Alliah 💖";
+
+document.body.addEventListener('touchstart', (e)=>{
+  const touch = e.touches[0];
+  explode(touch.clientX, touch.clientY);
+
+  // Generate 50 floating messages on mobile tap
+  for(let i=0;i<50;i++){
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    const randomX = Math.min(canvas.width - 80, Math.max(0, touch.clientX + Math.random()*200 -100));
+    const randomY = Math.min(canvas.height - 50, Math.max(0, touch.clientY + Math.random()*200 -100));
+    msg.style.left = randomX + 'px';
+    msg.style.top = randomY + 'px';
+    msg.style.fontSize = `${Math.random()*0.4+0.8}em`;
+    msg.textContent = messageText;
+    document.body.appendChild(msg);
+    setTimeout(()=> msg.remove(),4000);
+  }
+});
+</script>
+</body>
+</html>
