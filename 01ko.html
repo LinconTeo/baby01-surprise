@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 Alliah ♥</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Comic Sans MS',cursive;
+    text-align:center;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4,#a1c4fd);
+    overflow:hidden;
+    transition:1s;
+}
+
+h1{
+    color:white;
+    margin-top:30px;
+}
+
+#game{
+    position:relative;
+    height:80vh;
+}
+
+.button{
+    position:absolute;
+    padding:15px 20px;
+    border:none;
+    border-radius:25px;
+    background:#ff6f91;
+    color:white;
+    font-size:16px;
+    box-shadow:0 6px 12px rgba(0,0,0,0.2);
+    transition:0.3s;
+}
+
+.button:active{
+    transform:scale(1.1);
+}
+
+#message{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    display:none;
+    color:#ff4d6d;
+    width:80%;
+    box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+
+.shake{
+    animation:shake 0.3s;
+}
+
+@keyframes shake{
+    0%{transform:translateX(-5px);}
+    50%{transform:translateX(5px);}
+    100%{transform:translateX(0);}
+}
+
+.confetti{
+    position:fixed;
+    width:10px;
+    height:10px;
+    top:0;
+    animation:fall linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(100vh) rotate(360deg);
+        opacity:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>Catch the Button, 01 ♥</h1>
+<div id="game"></div>
+<div id="message"></div>
+
+<script>
+
+const game=document.getElementById("game");
+const message=document.getElementById("message");
+
+function randomPos(btn){
+    btn.style.left=Math.random()*(window.innerWidth-120)+"px";
+    btn.style.top=Math.random()*(window.innerHeight-200)+"px";
+}
+
+function changeBG(){
+    const colors=[
+        "linear-gradient(135deg,#ff9a9e,#fad0c4,#a1c4fd)",
+        "linear-gradient(135deg,#fbc2eb,#a6c1ee)",
+        "linear-gradient(135deg,#a8edea,#fed6e3)",
+        "linear-gradient(135deg,#c3cfe2,#fbc2eb)"
+    ];
+    document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
+}
+
+function confetti(){
+    const colors=["#ff6f91","#ffd700","#00d4ff","#ff7fff"];
+    for(let i=0;i<100;i++){
+        let c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=Math.random()*100+"vw";
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDuration=(2+Math.random()*3)+"s";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),5000);
+    }
+}
+
+function createMovingButton(text,action){
+    let btn=document.createElement("button");
+    btn.innerText=text;
+    btn.className="button";
+    randomPos(btn);
+
+    btn.onclick=action;
+
+    btn.onmouseover=()=>randomPos(btn);
+    btn.ontouchstart=()=>randomPos(btn);
+
+    game.appendChild(btn);
+}
+
+function clearGame(){
+    game.innerHTML="";
+}
+
+function startGame(){
+    clearGame();
+    changeBG();
+
+    createMovingButton("gusto mo ng joke 01? ♥",()=>{
+        clearGame();
+        jokeStage();
+    });
+
+    createMovingButton("click me :3",()=>{
+        document.body.classList.add("shake");
+        setTimeout(()=>document.body.classList.remove("shake"),300);
+    });
+
+    createMovingButton("not this one :)",()=>{
+        document.body.classList.add("shake");
+        setTimeout(()=>document.body.classList.remove("shake"),300);
+    });
+}
+
+function jokeStage(){
+    changeBG();
+    message.style.display="block";
+    message.innerHTML="ano ang tawag sa pari na nakulong?<br><br>Catch the right answer ♥";
+    createMovingButton("ANO?",revealJoke);
+    createMovingButton("Ano po baby? :3",revealJoke);
+}
+
+function revealJoke(){
+    clearGame();
+    changeBG();
+    confetti();
+    message.innerHTML="edi naholy<br><br>HAHAHA i love you ♥";
+    createMovingButton("may surprise pa ba? :3",surpriseStage);
+}
+
+function surpriseStage(){
+    clearGame();
+    changeBG();
+    message.innerHTML="Catch this button for your big surprise ♥";
+    createMovingButton("u want a surprise? ♥",sweetMessage);
+    createMovingButton("almost there :)",()=>{
+        document.body.classList.add("shake");
+        setTimeout(()=>document.body.classList.remove("shake"),300);
+    });
+}
+
+function sweetMessage(){
+    clearGame();
+    changeBG();
+    confetti();
+    message.innerHTML=
+    "Alliah Bernaldez ♥<br><br>"+
+    "Hi my 01 :3<br><br>"+
+    "You just chased all these buttons for this moment.<br>"+
+    "And just like that, I would choose you again and again.<br><br>"+
+    "You make everything fun.<br>"+
+    "You make simple things special.<br><br>"+
+    "Thank you for being my favorite person.<br>"+
+    "Stay cute, stay amazing.<br><br>"+
+    "I love you so much 01 ♥<br><br>"+
+    "- from L";
+}
+
+startGame();
+
+</script>
+</body>
+</html>
