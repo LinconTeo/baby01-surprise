@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surprise for Alliah 💖</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd);
+        font-family: 'Comic Sans MS', cursive, sans-serif;
+        overflow: hidden;
+        text-align: center;
+        transition: background 1s;
+    }
+
+    button {
+        padding: 20px 35px;
+        font-size: 1.6em;
+        background: #ff6f91;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        animation: pulse 1.5s infinite;
+    }
+
+    button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    #messageBox {
+        display: none;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 25px;
+        max-width: 90%;
+        font-size: 1.2em;
+        color: #ff4d6d;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        line-height: 1.5em;
+        margin-top: 20px;
+        transition: transform 0.5s, opacity 0.5s;
+        position: relative;
+        z-index: 10;
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ff6f91;
+        top: 0;
+        opacity: 0.8;
+        z-index: 100;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="gameArea">
+    <button id="startBtn">Click me, Alliah! 💖</button>
+    <div id="messageBox">
+        <p id="finalMessage"></p>
+    </div>
+</div>
+
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const messageBox = document.getElementById('messageBox');
+    const finalMessage = document.getElementById('finalMessage');
+    let step = 0;
+
+    const questions = [
+        "Do you want to see a cute surprise? 😘 (YES/NO)",
+        "Are you ready for something special? 💖 (YES/NO)",
+        "One last click to see your message! 🌸 (CLICK!)"
+    ];
+
+    const messages = [
+        "Hi Alliah! 🌸",
+        "I made this little surprise just for you. You are my 01 forever! 😍",
+        "Every moment with you makes my heart happy. Keep smiling, shining, and being amazing! ✨",
+        "Love you soooo much 💖 - From L 😘"
+    ];
+
+    function changeBackground() {
+        const colors = [
+            "linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd)",
+            "linear-gradient(135deg, #a8edea, #fed6e3, #fbc2eb)",
+            "linear-gradient(135deg, #fbc2eb, #a6c1ee, #ff9a9e)",
+            "linear-gradient(135deg, #c3cfe2, #c3cfe2, #fbc2eb)"
+        ];
+        document.body.style.background = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function createConfetti() {
+        const colors = ["#ff6f91", "#ffb347", "#ffd700", "#00d4ff", "#ff7fff"];
+        for(let i=0; i<100; i++){
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.animation = `fall ${3 + Math.random()*3}s linear forwards`;
+            confetti.style.top = "-20px";
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 6000);
+        }
+    }
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fall {
+            to { transform: translateY(${window.innerHeight + 50}px) rotate(${Math.random()*360}deg); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    startBtn.addEventListener('click', () => {
+        if (step < questions.length) {
+            if(step < questions.length - 1){
+                const answer = prompt(questions[step]);
+                if(answer && answer.toLowerCase() === "yes") {
+                    step++;
+                    changeBackground();
+                    alert("Yay! Click again 💖");
+                } else {
+                    alert("Okay! Maybe later 😘");
+                }
+            } else {
+                step++;
+                startBtn.style.display = "none";
+                messageBox.style.display = "block";
+                messageBox.style.transform = "scale(0)";
+                messageBox.style.opacity = "0";
+                finalMessage.innerHTML = messages.join("<br><br>");
+                setTimeout(() => {
+                    messageBox.style.transform = "scale(1)";
+                    messageBox.style.opacity = "1";
+                    createConfetti();
+                }, 100);
+                changeBackground();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
