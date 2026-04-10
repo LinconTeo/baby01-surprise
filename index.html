@@ -89,6 +89,8 @@
     #page4.active {
       justify-content: flex-start;
       padding-top: 6px;
+      overflow-y: auto;
+      max-height: calc(min(92vh, 760px) - 44px);
     }
 
     @keyframes fadeIn {
@@ -487,9 +489,14 @@
     body.page4-active .message-box .type-line:nth-of-type(2) { animation-delay: .55s; }
     body.page4-active .message-box .type-line:nth-of-type(3) { animation-delay: 1.0s; }
     body.page4-active .message-box .type-line:nth-of-type(4) { animation-delay: 1.45s; }
-    body.page4-active .message-box .type-line:nth-of-type(5) { animation-delay: 2.8s; }
-    body.page4-active .spotify-wrap { animation-delay: 2.2s; }
-    body.page4-active .message-box .signature.type-line { animation-delay: 3.2s; }
+    body.page4-active .message-box .type-line:nth-of-type(5) { animation-delay: 1.9s; }
+    body.page4-active .message-box .type-line:nth-of-type(6) { animation-delay: 2.35s; }
+    body.page4-active .message-box .type-line:nth-of-type(7) { animation-delay: 2.8s; }
+    body.page4-active .spotify-wrap { animation-delay: 3.2s; }
+    body.page4-active .message-box .type-line:nth-of-type(8) { animation-delay: 3.6s; }
+    body.page4-active .message-box .type-line:nth-of-type(9) { animation-delay: 4.1s; }
+    body.page4-active .message-box .type-line:nth-of-type(10) { animation-delay: 4.6s; }
+    body.page4-active .message-box .signature.type-line { animation-delay: 5.0s; }
 
     @keyframes typeReveal {
       from { opacity: 0; transform: translateY(6px); }
@@ -579,18 +586,18 @@
   <div class="card">
     <section class="page active" id="page1">
       <div class="gif-box">(˶ᵔ ᵕ ᵔ˶)☀️</div>
-      <div class="question">Hi Baby Alliah ko, how did you sleep? 💗</div>
+      <div class="question">Hi Baby Iah ko, how did you sleep? 💗</div>
       <p>I hope you got enough rest and woke up feeling a little lighter today.</p>
       <div class="btn-row">
         <button onclick="nextPage(2)">I slept well 🌷</button>
         <button onclick="nextPage(2)">Still a bit eepy 💤</button>
-        <button onclick="nextPage(2)">cute si lincon </button>
+        <button onclick="nextPage(2)">cute si lincon</button>
       </div>
-      <div class="tiny">tap any button, Baby Alliah ko</div>
+      <div class="tiny">tap any button, Baby Iah ko</div>
     </section>
 
     <section class="page" id="page2">
-      <h1>Good morning, Baby Alliah ko ☀️</h1>
+      <h1>Good morning, Baby Iah ko ☀️</h1>
       <div class="bouquet-wrap" aria-label="pink tulip bouquet">
         <div class="tulip-glow g1"></div>
         <div class="tulip-glow g2"></div>
@@ -616,7 +623,7 @@
         <div class="tulip t7"><div class="flower"><span class="petal left"></span><span class="petal center"></span><span class="petal right"></span></div><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div></div>
         <div class="tulip t8"><div class="flower"><span class="petal left"></span><span class="petal center"></span><span class="petal right"></span></div><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div></div>
       </div>
-      <p><strong>For you, Baby Alliah ko 🌷</strong><br>little pink tulips for your morning because you deserve something cute first thing today.</p>
+      <p><strong>For you, Baby Iah ko 🌷</strong><br>little pink tulips for your morning because you deserve something cute first thing today.</p>
       <div class="btn-row">
         <button onclick="nextPage(3)">Open this 💌</button>
       </div>
@@ -628,7 +635,7 @@
         <div class="envelope-back"></div>
         <div class="letter">
           <div class="letter-lines">
-            Good morning, Baby Alliah ko...<br>
+            Good morning, Baby Iah ko...<br>
             this is just a small reminder<br>
             that you are loved,<br>
             precious, and always on my mind.<br>
@@ -646,18 +653,41 @@
     </section>
 
     <section class="page" id="page4">
-      <h1>Good morning, Baby Alliah ko 💗</h1>
+      <h1>Good morning, Baby Iah ko 💗</h1>
       <div class="message-box">
-        <p class="type-line">Good morning, Baby Alliah ko. Hope you woke up feeling a little better today.</p>
-        <p class="type-line">Please eat your breakfast, even if it’s just something small, and drink water too. Take care of yourself for me, okay?</p>
-        <p class="type-line">Just wanted to be part of your morning in a small way. Hope this makes you smile a bit.</p>
-        <p class="type-line">You’ve been on my mind, and I really just want today to be gentle with you.</p>
+        <p class="type-line">Good morning, baby Iah ko. I hope nakatulog ka nang maayos. Don’t forget to eat your breakfast and drink water, okay?</p>
+
+        <p class="type-line">Ang random neto, but I just wanted you to see how much I appreciate and love you. I know lately ang bilis ko magtampo sa mga bagay, even when I know it’s just a joke. Hindi ko rin minsan ma-explain, pero ang bilis lang talaga ng effect sa’kin.</p>
+
+        <p class="type-line">I know words aren’t enough to tell you how much I appreciate you, but I want you to know that I’m really thankful that I met you. Even though wala pa tayong label, masaya ako sa kung anong meron tayo ngayon.</p>
+
+        <p class="type-line">I know there are times na lagi kitang tinatanong kung mahal mo ba ako, because of my anxious and avoidant side. But I truly appreciate you for always reassuring me and making me feel loved. I’m sorry if minsan nakukulitan ka na sa’kin when I get moody or tampo easily—sometimes I even “rage bait” you—but please know it’s never to hurt you. It’s all love.</p>
+
+        <p class="type-line">Thank you for being you, Iah. You don’t know how grateful I am that I met you. I’ve met a lot of people, but you’re different from all of them. Ikaw yung nagpa-feel sa’kin na kahit sa generation na ’to, may genuine pa palang magmahal.</p>
+
+        <p class="type-line">I love you so much, baby. I promise I’ll try my best to be better for you and to treat you right. Thank you for being you.</p>
+
+        <p class="type-line">And btw, alam mo I promised myself before na I would never dedicate my favorite band or song to someone—especially The Ridleys. Pero ewan ko, when I listen to them, ikaw agad naiisip ko. Every lyric just reminds me of you and makes me feel something deeper.</p>
+
         <div class="spotify-wrap">
-          <iframe style="border-radius:12px; width:100%; border:0;" src="https://open.spotify.com/embed/track/3EriD11HEMpLt5q8QO2tQZ?utm_source=generator" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          <iframe
+            style="border-radius:12px; width:100%; border:0;"
+            src="https://open.spotify.com/embed/track/3EriD11HEMpLt5q8QO2tQZ?utm_source=generator"
+            height="152"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy">
+          </iframe>
         </div>
-        <p class="type-line">Also, try listening to this. It reminded me of you right away — soft, calm, and easy to keep coming back to. 🎧</p>
-        <p class="type-line">Hope it helps your mood a little. Have a nice morning, Baby Alliah. </p>
-        <div class="signature type-line">— from your coffeeholic ☕💞</div>
+
+        <p class="type-line"><em>Someday</em> by The Ridleys, this song really reminds me of you. 🎧</p>
+
+        <p class="type-line">And maybe that’s what I want with you… something real, something steady. Hindi man perfect, but something that feels right, something that feels safe. I may not always express it perfectly, and I know I still have a lot to improve on, but one thing I’m sure of is that what I feel for you is real.</p>
+
+        <p class="type-line">I hope you never get tired of me, the way I think about you, the way I care for you. And I hope one day, when everything is clearer and ready, we can look back at this moment and say, “This is where it all started.”</p>
+
+        <p class="type-line">I love you, always. 💛</p>
+
+        <div class="signature type-line">— from your baby lincon ☕💞</div>
       </div>
     </section>
   </div>
