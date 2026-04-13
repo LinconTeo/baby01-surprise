@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tindahan ni Nemia - Restricted Receipt Version</title>
+  <style>
+    :root{
+      --b1:#0f172a;--b2:#123a8f;--b3:#1d4ed8;--b4:#2563eb;--b5:#60a5fa;--b6:#dbeafe;--b7:#eff6ff;
+      --s1:#334155;--s2:#64748b;--s3:#e2e8f0;--w:#fff;--shadow:0 10px 30px rgba(37,99,235,.12);
+      --amber-bg:#fff7ed;--amber-bd:#fed7aa;--amber-tx:#9a3412;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+    body{background:linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);color:var(--b1)}
+    button,input,select,textarea{font:inherit}
+    .app{display:grid;grid-template-columns:280px 1fr 380px;min-height:100vh;gap:18px;padding:18px}
+    .panel{background:rgba(255,255,255,.96);border:1px solid var(--b6);border-radius:28px;box-shadow:var(--shadow)}
+    .sidebar,.summary{padding:22px;position:sticky;top:18px;height:calc(100vh - 36px);overflow:auto}
+    .brand{padding:18px;border-radius:22px;background:linear-gradient(135deg,var(--b2),var(--b4),#38bdf8);color:#fff;margin-bottom:18px}
+    .brand small{display:inline-block;margin-bottom:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.15)}
+    .brand h1{font-size:1.7rem;line-height:1.15;margin-bottom:8px}
+    .brand p{font-size:13px;line-height:1.55;color:#eaf3ff}
+    .owner-card{margin-top:14px;background:rgba(255,255,255,.14);padding:14px;border-radius:18px}
+    .owner-card div{font-size:13px;line-height:1.6;margin-bottom:4px}
+    .owner-card strong{color:#fff}
+    .sidebar-section{margin-top:18px}
+    .sidebar-section h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--s2);margin-bottom:10px}
+    .nav-btn,.action-btn,.qty-btn,.summary-btn,.small-btn,.primary-btn,.danger-btn,.ghost-btn{border:none;cursor:pointer;transition:.2s ease}
+    .nav-btn{width:100%;text-align:left;padding:14px 15px;border-radius:16px;background:#fff;border:1px solid var(--s3);color:var(--b1);margin-bottom:10px}
+    .nav-btn:hover,.small-btn:hover,.item-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.1)}
+    .nav-btn.active{background:linear-gradient(135deg,var(--b4),var(--b3));color:#fff;border-color:var(--b4)}
+    .nav-btn span{display:block;font-size:12px;opacity:.82;margin-top:4px}
+    .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .action-btn,.ghost-btn{padding:13px 12px;border-radius:14px;background:var(--b7);color:var(--b3);border:1px solid var(--b6);font-weight:bold;font-size:13px}
+    .action-btn:hover,.ghost-btn:hover{background:var(--b6)}
+    .main{padding:22px}
+    .hero{background:linear-gradient(135deg,var(--b2),var(--b4),#38bdf8);color:#fff;border-radius:28px;padding:26px;margin-bottom:18px}
+    .hero-top{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-end}
+    .hero h2{font-size:clamp(1.8rem,3vw,2.7rem);margin-bottom:8px}
+    .hero p{max-width:680px;font-size:14px;line-height:1.65;color:#ebf4ff}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:10px;min-width:min(100%,420px)}
+    .stat{background:rgba(255,255,255,.16);border-radius:18px;padding:14px}
+    .stat span{display:block;font-size:12px;color:#dbeafe;margin-bottom:6px}
+    .stat strong{font-size:1.2rem}
+    .toolbar{display:grid;grid-template-columns:1fr auto auto;gap:12px;margin-top:18px}
+    .search-input,.select-input,.number-input,.text-input,.textarea-input{
+      width:100%;padding:14px 15px;border-radius:16px;border:1px solid var(--b6);background:#fff;outline:none
+    }
+    .primary-btn{padding:14px 18px;border-radius:16px;background:var(--b4);color:#fff;font-weight:bold}
+    .primary-btn:hover{background:var(--b3)}
+    .danger-btn{padding:12px 14px;border-radius:14px;background:#fee2e2;color:#b91c1c;font-weight:bold}
+    .danger-btn:hover{background:#fecaca}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0;flex-wrap:wrap}
+    .section-head h3{font-size:1.6rem}
+    .pill{padding:10px 14px;background:var(--b7);color:var(--b3);border-radius:999px;font-weight:bold;font-size:13px}
+    .intro-box,.gcash-box{background:#fff;border:1px solid var(--s3);border-radius:24px;padding:18px;margin-bottom:16px}
+    .intro-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .info-list div{margin-bottom:8px;line-height:1.6}
+    .qr-box{border:2px dashed var(--b5);background:var(--b7);border-radius:20px;min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;color:var(--s2);font-weight:bold}
+    .gcash-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+    .gcash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .gcash-table{border:1px solid var(--s3);border-radius:18px;overflow:hidden}
+    .gcash-table h4{background:var(--b7);padding:12px 14px;color:var(--b3)}
+    .gcash-row{display:grid;grid-template-columns:1fr auto;padding:10px 14px;border-top:1px solid #edf2f7;font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .item-card{background:#fff;border:1px solid var(--s3);border-radius:22px;padding:18px;transition:.2s ease}
+    .item-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+    .item-top h4{font-size:1rem;line-height:1.45}
+    .price-tag{display:inline-block;padding:8px 11px;border-radius:999px;background:var(--b7);color:var(--b3);font-weight:bold;font-size:13px;white-space:nowrap}
+    .tag-restricted{display:inline-block;margin-top:8px;padding:6px 10px;border-radius:999px;background:var(--amber-bg);color:var(--amber-tx);border:1px solid var(--amber-bd);font-size:11px;font-weight:bold}
+    .item-card p{color:var(--s2);font-size:13px;margin-bottom:16px}
+    .card-actions{display:grid;grid-template-columns:1fr auto;gap:10px}
+    .small-btn{padding:12px 14px;border-radius:14px;background:var(--b4);color:#fff;font-weight:bold}
+    .small-btn.secondary{background:#fff;color:var(--b3);border:1px solid var(--b6)}
+    .small-btn.restricted{background:#f59e0b}
+    .notice{padding:12px 14px;border-radius:16px;background:var(--amber-bg);color:var(--amber-tx);font-size:12px;border:1px solid var(--amber-bd);margin-bottom:14px;line-height:1.6}
+    .receipt-section{margin-bottom:18px}
+    .receipt-section h4{font-size:1rem;margin-bottom:10px;color:var(--b1)}
+    .summary-header{padding:18px;border-radius:22px;background:linear-gradient(135deg,var(--b3),var(--b5));color:#fff;margin-bottom:16px}
+    .summary-header p{font-size:13px;color:#eaf3ff;margin-top:6px}
+    .list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+    .list-item{border:1px solid var(--s3);border-radius:18px;padding:14px;background:#fff}
+    .list-item-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .list-item h5{font-size:14px;line-height:1.4}
+    .list-item small{color:var(--s2);display:block;margin-top:4px;font-size:12px}
+    .qty-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .qty-controls{display:flex;align-items:center;gap:8px}
+    .qty-btn{width:34px;height:34px;border-radius:10px;background:var(--b7);color:var(--b3);border:1px solid var(--b6);font-weight:bold}
+    .qty-value{min-width:28px;text-align:center;font-weight:bold}
+    .summary-block{border-top:1px solid var(--s3);padding-top:16px;display:grid;gap:12px}
+    .summary-row{display:flex;justify-content:space-between;gap:10px;color:#475569;font-size:14px}
+    .summary-row.total{color:var(--b1);font-weight:bold;font-size:1.12rem}
+    .summary-btn{width:100%;padding:14px;border-radius:16px;background:var(--b4);color:#fff;font-weight:bold}
+    .summary-btn.secondary{background:#fff;color:var(--b3);border:1px solid var(--b6)}
+    .empty{padding:24px;text-align:center;color:var(--s2);border:1px dashed var(--b5);border-radius:20px;background:#fafcff}
+    .receipt-preview{padding:14px;border:1px solid var(--s3);border-radius:18px;background:#fff}
+    .receipt-preview pre{white-space:pre-wrap;font-size:12px;line-height:1.55;color:#334155}
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}
+    .modal.active{display:flex}
+    .modal-box{width:min(520px,100%);background:#fff;border-radius:26px;padding:22px;box-shadow:0 24px 48px rgba(2,6,23,.22)}
+    .modal-box h3{margin-bottom:16px;font-size:1.4rem}
+    .form-grid{display:grid;gap:12px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+    .note{margin-top:16px;padding:14px;border-radius:16px;background:#fff7ed;color:#9a3412;font-size:13px;line-height:1.6;border:1px solid #fed7aa}
+    .hidden{display:none!important}
+    @media (max-width:1260px){.app{grid-template-columns:250px 1fr}.summary{grid-column:1 / -1;position:static;height:auto}}
+    @media (max-width:860px){
+      .app{grid-template-columns:1fr;padding:12px}.sidebar,.summary{position:static;height:auto}.toolbar{grid-template-columns:1fr}
+      .stats{grid-template-columns:1fr 1fr}.stats .stat:last-child,.stats .stat:nth-last-child(2){grid-column:auto}.action-grid{grid-template-columns:1fr}
+      .intro-grid,.gcash-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar panel">
+      <div class="brand">
+        <small>Blue Themed Store System</small>
+        <h1>Tindahan ni Nemia</h1>
+        <p>Responsive inventory and receipt system for phone and desktop.</p>
+        <div class="owner-card">
+          <div><strong>Owner:</strong> Nemia Teodosio</div>
+          <div><strong>Address:</strong> 170 C. Arellano St. Malabon City</div>
+          <div><strong>Number:</strong> 09100667046</div>
+          <div><strong>GCash:</strong> 09100667046 - Maybellyn Teodosio</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Quick Links</h3>
+        <button class="nav-btn" onclick="scrollToSection('introSection')">ℹ️ Store Info <span>Owner, address, number, QR</span></button>
+        <button class="nav-btn" onclick="scrollToSection('gcashSection')">💙 GCash <span>Rates and payment info</span></button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <div id="categorySidebar"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Manage Store</h3>
+        <div class="action-grid">
+          <button class="action-btn" id="addCategoryBtn">+ Category</button>
+          <button class="action-btn" id="addItemBtn">+ Item</button>
+          <button class="action-btn" id="exportBtn">Export</button>
+          <button class="action-btn" id="importBtn">Import</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json" class="hidden" />
+      </div>
+    </aside>
+
+    <main class="main panel">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <h2>Modern sari-sari store system</h2>
+            <p>Search items, open categories from the sidebar, edit prices, add products, and build a receipt with automatic total price.</p>
+          </div>
+          <div class="stats">
+            <div class="stat"><span>Categories</span><strong id="categoryCount">0</strong></div>
+            <div class="stat"><span>Items</span><strong id="itemCount">0</strong></div>
+            <div class="stat"><span>Regular Qty</span><strong id="regularCountTop">0</strong></div>
+            <div class="stat"><span>Restricted Qty</span><strong id="restrictedCountTop">0</strong></div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search item or category..." />
+          <button class="primary-btn" id="resetBtn">Reset View</button>
+          <button class="primary-btn" id="showAllBtn">Show All</button>
+        </div>
+      </section>
+
+      <section id="introSection" class="intro-box">
+        <div class="section-head">
+          <h3>Store Intro</h3>
+          <div class="pill">Tindahan ni Nemia</div>
+        </div>
+        <div class="intro-grid">
+          <div class="info-list">
+            <div><strong>Owner Name:</strong> Nemia Teodosio</div>
+            <div><strong>Address:</strong> 170 C. Arellano St. Malabon City</div>
+            <div><strong>Contact Number:</strong> 09100667046</div>
+            <div><strong>GCash Number:</strong> 09100667046 - Maybellyn Teodosio</div>
+            <div><strong>Note:</strong> You can replace the QR placeholder on the right with your real QR image later.</div>
+          </div>
+        
+        </div>
+      </section>
+
+      <section id="gcashSection" class="gcash-box">
+        <div class="gcash-top">
+          <div>
+            <h3>GCash Rates</h3>
+            <p style="color:#64748b;font-size:14px;margin-top:6px">Clean text version of your GCash cash-in and cash-out rates.</p>
+          </div>
+          <button class="ghost-btn" onclick="toggleGcashRates()">Show / Hide Rates</button>
+        </div>
+        <div id="gcashRatesWrap">
+          <div class="gcash-grid">
+            <div class="gcash-table">
+              <h4>Amount / Charge</h4>
+              <div class="gcash-row"><span>1-500</span><strong>10</strong></div>
+              <div class="gcash-row"><span>501-1000</span><strong>20</strong></div>
+              <div class="gcash-row"><span>1001-1500</span><strong>30</strong></div>
+              <div class="gcash-row"><span>1501-2000</span><strong>40</strong></div>
+              <div class="gcash-row"><span>2001-2500</span><strong>50</strong></div>
+              <div class="gcash-row"><span>2501-3000</span><strong>60</strong></div>
+              <div class="gcash-row"><span>3001-3500</span><strong>70</strong></div>
+              <div class="gcash-row"><span>3501-4000</span><strong>80</strong></div>
+              <div class="gcash-row"><span>4001-4500</span><strong>90</strong></div>
+              <div class="gcash-row"><span>4501-5000</span><strong>100</strong></div>
+            </div>
+            <div class="gcash-table">
+              <h4>Amount / Charge</h4>
+              <div class="gcash-row"><span>5001-5500</span><strong>110</strong></div>
+              <div class="gcash-row"><span>5501-6000</span><strong>120</strong></div>
+              <div class="gcash-row"><span>6001-6500</span><strong>130</strong></div>
+              <div class="gcash-row"><span>6501-7000</span><strong>140</strong></div>
+              <div class="gcash-row"><span>7001-7500</span><strong>150</strong></div>
+              <div class="gcash-row"><span>7501-8000</span><strong>160</strong></div>
+              <div class="gcash-row"><span>8001-8500</span><strong>170</strong></div>
+              <div class="gcash-row"><span>8501-9000</span><strong>180</strong></div>
+              <div class="gcash-row"><span>9001-9500</span><strong>190</strong></div>
+              <div class="gcash-row"><span>9501-10000</span><strong>200</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <div><h3 id="sectionTitle">All Categories</h3></div>
+        <div class="pill" id="resultCount">0 results</div>
+      </div>
+
+      <section id="itemsContainer" class="grid"></section>
+
+      <div class="note">
+        Browser save works on the same device/browser only. For real same-data sync on different devices, use Firebase or Supabase later.
+      </div>
+    </main>
+
+    <aside class="summary panel">
+      <div class="summary-header">
+        <h3>Receipt Builder</h3>
+        <p>Regular items and restricted items are tracked separately, then combined in the final receipt total.</p>
+      </div>
+
+      <div class="notice">
+        Restricted items are kept in a separate section for record and receipt purposes. They still count in the final total and saved receipt.
+      </div>
+
+      <div class="receipt-section">
+        <h4>Regular Items</h4>
+        <div id="regularList" class="list"></div>
+      </div>
+
+      <div class="receipt-section">
+        <h4>Restricted Items</h4>
+        <div id="restrictedList" class="list"></div>
+      </div>
+
+      <div class="summary-block">
+        <div class="summary-row"><span>Regular subtotal</span><strong id="regularSubtotal">₱0.00</strong></div>
+        <div class="summary-row"><span>Restricted subtotal</span><strong id="restrictedSubtotal">₱0.00</strong></div>
+        <div class="summary-row"><span>Total quantity</span><strong id="totalQuantity">0</strong></div>
+        <div class="summary-row total"><span>Grand total</span><strong id="grandTotal">₱0.00</strong></div>
+        <button class="summary-btn" id="clearAllBtn">Clear All</button>
+        <button class="summary-btn secondary" id="saveDataBtn">Save Data</button>
+      </div>
+
+      <div class="receipt-section">
+        <h4>Receipt Preview</h4>
+        <div class="receipt-preview">
+          <pre id="receiptText">No items yet.</pre>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="modal" id="itemModal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Add Item</h3>
+      <div class="form-grid">
+        <input type="text" class="text-input" id="itemNameInput" placeholder="Item name" />
+        <select class="select-input" id="itemCategoryInput"></select>
+        <input type="number" class="number-input" id="itemPriceInput" placeholder="Price" min="0" step="0.01" />
+      </div>
+      <div class="modal-actions">
+        <button class="danger-btn hidden" id="deleteItemBtn">Delete</button>
+        <button class="action-btn" id="cancelItemModal">Cancel</button>
+        <button class="primary-btn" id="saveItemModal">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="categoryModal">
+    <div class="modal-box">
+      <h3>Add Category</h3>
+      <div class="form-grid">
+        <input type="text" class="text-input" id="categoryNameInput" placeholder="Category name" />
+        <input type="text" class="text-input" id="categoryIconInput" placeholder="Icon or emoji, example: ☕" />
+        <select class="select-input" id="categoryTypeInput">
+          <option value="regular">Regular category</option>
+          <option value="restricted">Restricted category</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="action-btn" id="cancelCategoryModal">Cancel</button>
+        <button class="primary-btn" id="saveCategoryModal">Save Category</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultStore = {
+      categories: [
+        { name: "Powdered Drinks", icon: "☕", restricted: false, items: [
+          { name: "Kopiko Blanca", price: 17 }, { name: "Kopiko Brown", price: 17 }, { name: "Kopiko Black", price: 17 },
+          { name: "Greataste White", price: 17 }, { name: "Greattaste Choco", price: 17 }, { name: "Tang Orange", price: 25 },
+          { name: "Nescafe Creamy White", price: 18 }, { name: "Nescafe Original", price: 18 }, { name: "Nescafe Classic Stick", price: 5 },
+          { name: "Bearbrand", price: 16 }, { name: "Milo", price: 13 }, { name: "Energen", price: 13 }
+        ]},
+        { name: "Dressing", icon: "🧀", restricted: false, items: [
+          { name: "Cheezee", price: 10 }, { name: "Ladys Choice Chicken Spread", price: 16 }, { name: "Ladys Choice Bacon Spread", price: 16 }
+        ]},
+        { name: "Powder and Soap", icon: "🧴", restricted: false, items: [
+          { name: "Keratin Gold", price: 10 }, { name: "Sunsilk Shampoo", price: 10 }, { name: "Head & Shoulders", price: 10 },
+          { name: "Clear", price: 10 }, { name: "Dove Shampoo", price: 10 }, { name: "Pantene", price: 10 }, { name: "Colgate", price: 12 },
+          { name: "Closeup", price: 12 }, { name: "Surf Powder", price: 10 }, { name: "Ariel Duo", price: 20 }, { name: "Downy Solo", price: 10 },
+          { name: "Downy 3X", price: 22 }, { name: "Zonrox 1000 ML Big", price: 48 }, { name: "Joy Sachet Solo", price: 15 },
+          { name: "Safeguard Pink", price: 25 }, { name: "Safeguard White", price: 25 }, { name: "Silka Orange", price: 25 },
+          { name: "Irish Spring", price: 45 }, { name: "LabLast Laundry Detergent Bar", price: 12 }, { name: "Rexona Pink", price: 10 },
+          { name: "Off Lotion", price: 15 }, { name: "Hair Wax", price: 10 }, { name: "Toothbrush", price: 30 }, { name: "Tawas", price: 22 }
+        ]},
+        { name: "Condiments", icon: "🧂", restricted: false, items: [
+          { name: "Knorr Cubes", price: 9 }, { name: "Sinigang Mix Gabi", price: 20 }, { name: "Mama Sitas Oyster Sauce", price: 9 },
+          { name: "Magic Sarap", price: 6 }, { name: "Betchin", price: 5 }, { name: "Sugar Brown", price: 23 }, { name: "Sugar White", price: 25 },
+          { name: "Spring Oil Sanchet 40ML", price: 12 }, { name: "Vegetable Oil 200ML", price: 30 }, { name: "Datu Puti 200 ML", price: 12 },
+          { name: "Silver Swan Suka", price: 14 }, { name: "Silver Swan Soy Sauce", price: 15 }, { name: "Rajah Puro Patis", price: 15 },
+          { name: "Salted Black Beans", price: 30 }, { name: "Fresh Gata", price: 40 }, { name: "Original Tomato Sauce 250G", price: 35 },
+          { name: "Philips Peas", price: 25 }, { name: "Whole Corn Kernels", price: 50 }, { name: "Ketchup Bottle", price: 35 },
+          { name: "Alaska Evaporada 360ML", price: 42 }, { name: "Kulina Vinegar 1L", price: 38 }
+        ]},
+        { name: "Canned Foods", icon: "🥫", restricted: false, items: [
+          { name: "MaLing", price: 100 }, { name: "MrSquirrel Luncheon Meat", price: 100 }, { name: "Fresca Tuna", price: 35 },
+          { name: "Tuna Afritada", price: 36 }, { name: "Tuna Caldereta", price: 36 }, { name: "Mega Sardines", price: 30 },
+          { name: "Angentina Corned Beef 150 Grams", price: 42 }, { name: "Blue Bay Corned Tuna 85g", price: 35 }, { name: "Blue Bay Corned Tuna 150g", price: 40 }
+        ]},
+        { name: "Drinks", icon: "🥤", restricted: false, items: [
+          { name: "Wilkins Water 1L", price: 25 }, { name: "Wilkins Water 500ML", price: 15 }, { name: "Boyet Water Small", price: 20 },
+          { name: "Boyet Water Big", price: 12 }, { name: "Sting", price: 26 }, { name: "Cobra Glass Bottle", price: 28 },
+          { name: "Cobra Plastic Bottle", price: 20 }, { name: "Coca Cola Coke Mismo", price: 22 }, { name: "Coca Cola Sprite Mismo", price: 22 },
+          { name: "Coca Cola Royal Mismo", price: 22 }, { name: "Mountain Dew", price: 22 }, { name: "Coca Cola 1.5 Liters", price: 80 },
+          { name: "Coke Kasalo", price: 38 }
+        ]},
+        { name: "Alcohol Drinks", icon: "🍾", restricted: true, items: [
+          { name: "Gin Bilog", price: 85 }, { name: "Redhorse Small", price: 70 }, { name: "Redhorse Big", price: 140 },
+          { name: "Alfonso Light", price: 315 }, { name: "Emperandor Light 1Liter", price: 195 }
+        ]},
+        { name: "Noodles", icon: "🍜", restricted: false, items: [
+          { name: "Pancit Canton", price: 18 }, { name: "Lucky Me Noodles", price: 13 }, { name: "Lucky Me Labuyo", price: 14 },
+          { name: "Nissin Ramen Seafood", price: 18 }, { name: "Nissin CupNoodles", price: 30 }
+        ]},
+        { name: "Cigarettes", icon: "🚬", restricted: true, items: [
+          { name: "Marlboro", price: 11 }, { name: "Camel", price: 10 }, { name: "Fortune", price: 10 }, { name: "Mighty", price: 10 },
+          { name: "Winston", price: 12 }, { name: "Chesterfield", price: 9 }, { name: "Concord", price: 7 }
+        ]},
+        { name: "Tinapay", icon: "🍞", restricted: false, items: [
+          { name: "Combi", price: 8 }, { name: "Bingo", price: 8 }, { name: "Lava Cake", price: 11 }, { name: "Fudgee Bar", price: 11 },
+          { name: "Cookies Bites", price: 10 }, { name: "Bravo", price: 8 }, { name: "Rebisco Strawberry", price: 8 }, { name: "Cheese Cake", price: 11 },
+          { name: "Cream O", price: 9 }, { name: "Magic Flakes Cheese", price: 8 }, { name: "Hiro", price: 8 }, { name: "Skyflakes", price: 8 },
+          { name: "Richeese Wafer", price: 9 }
+        ]},
+        { name: "Mani", icon: "🥜", restricted: false, items: [
+          { name: "Mani", price: 5 }, { name: "Super Crunch Chip Charon", price: 15 }, { name: "Vcut", price: 20 }, { name: "Piattos", price: 20 },
+          { name: "Nova", price: 20 }, { name: "Cheese Rings", price: 10 }, { name: "Clover", price: 10 }, { name: "Moby", price: 10 }, { name: "Loaded", price: 10 }
+        ]}
+      ]
+    };
+
+    const STORE_KEY = 'tindahan_ni_nemia_store_v3';
+    const RECEIPT_KEY = 'tindahan_ni_nemia_receipt_v3';
+    let store = loadStore();
+    let receipt = loadReceipt();
+    let activeCategory = 'Home';
+    let editingItemRef = null;
+
+    const categorySidebar = document.getElementById('categorySidebar');
+    const itemsContainer = document.getElementById('itemsContainer');
+    const categoryCount = document.getElementById('categoryCount');
+    const itemCount = document.getElementById('itemCount');
+    const regularCountTop = document.getElementById('regularCountTop');
+    const restrictedCountTop = document.getElementById('restrictedCountTop');
+    const sectionTitle = document.getElementById('sectionTitle');
+    const resultCount = document.getElementById('resultCount');
+    const searchInput = document.getElementById('searchInput');
+    const resetBtn = document.getElementById('resetBtn');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const regularList = document.getElementById('regularList');
+    const restrictedList = document.getElementById('restrictedList');
+    const regularSubtotal = document.getElementById('regularSubtotal');
+    const restrictedSubtotal = document.getElementById('restrictedSubtotal');
+    const totalQuantity = document.getElementById('totalQuantity');
+    const grandTotal = document.getElementById('grandTotal');
+    const receiptText = document.getElementById('receiptText');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
+    const itemModal = document.getElementById('itemModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const itemNameInput = document.getElementById('itemNameInput');
+    const itemCategoryInput = document.getElementById('itemCategoryInput');
+    const itemPriceInput = document.getElementById('itemPriceInput');
+    const deleteItemBtn = document.getElementById('deleteItemBtn');
+    const cancelItemModal = document.getElementById('cancelItemModal');
+    const saveItemModal = document.getElementById('saveItemModal');
+    const categoryModal = document.getElementById('categoryModal');
+    const categoryNameInput = document.getElementById('categoryNameInput');
+    const categoryIconInput = document.getElementById('categoryIconInput');
+    const categoryTypeInput = document.getElementById('categoryTypeInput');
+    const cancelCategoryModal = document.getElementById('cancelCategoryModal');
+    const saveCategoryModal = document.getElementById('saveCategoryModal');
+
+    function loadStore(){try{const saved=localStorage.getItem(STORE_KEY);return saved?JSON.parse(saved):structuredClone(defaultStore)}catch{return structuredClone(defaultStore)}}
+    function loadReceipt(){try{const saved=localStorage.getItem(RECEIPT_KEY);return saved?JSON.parse(saved):[]}catch{return[]}}
+    function saveStore(){localStorage.setItem(STORE_KEY,JSON.stringify(store))}
+    function saveReceipt(){localStorage.setItem(RECEIPT_KEY,JSON.stringify(receipt))}
+    function peso(v){return new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(v||0)}
+    function escapeHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+    function scrollToSection(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+    function toggleGcashRates(){document.getElementById('gcashRatesWrap').classList.toggle('hidden')}
+
+    function fillCategorySelect(){
+      itemCategoryInput.innerHTML = store.categories.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+    }
+
+    function getFilteredCategories(){
+      const q=searchInput.value.trim().toLowerCase();
+      const filtered=store.categories.map(c=>({
+        ...c,
+        items:c.items.filter(i=>i.name.toLowerCase().includes(q)||c.name.toLowerCase().includes(q))
+      })).filter(c=>q?(c.name.toLowerCase().includes(q)||c.items.length>0):true);
+      return activeCategory==='Home'?filtered:filtered.filter(c=>c.name===activeCategory);
+    }
+
+    function getAllItemsCount(){return store.categories.reduce((s,c)=>s+c.items.length,0)}
+
+    function renderSidebar(){
+      categorySidebar.innerHTML='';
+      const home=document.createElement('button');
+      home.className=`nav-btn ${activeCategory==='Home'?'active':''}`;
+      home.innerHTML=`🏠 Home <span>Show all products</span>`;
+      home.onclick=()=>{activeCategory='Home';renderAll()};
+      categorySidebar.appendChild(home);
+
+      store.categories.forEach(c=>{
+        const btn=document.createElement('button');
+        btn.className=`nav-btn ${activeCategory===c.name?'active':''}`;
+        btn.innerHTML=`${escapeHtml(c.icon)} ${escapeHtml(c.name)} <span>${c.items.length} items${c.restricted?' • restricted':''}</span>`;
+        btn.onclick=()=>{activeCategory=c.name;renderAll()};
+        categorySidebar.appendChild(btn);
+      });
+    }
+
+    function renderItems(){
+      const visible=getFilteredCategories();
+      const results=visible.reduce((s,c)=>s+c.items.length,0);
+      sectionTitle.textContent=activeCategory==='Home'?'All Categories':activeCategory;
+      resultCount.textContent=`${results} results`;
+
+      if(!visible.length||!results){
+        itemsContainer.innerHTML='<div class="empty">No items found. Try another search or reset the view.</div>';
+        return;
+      }
+
+      const cards=[];
+      visible.forEach(category=>{
+        category.items.forEach(item=>{
+          const btnLabel = category.restricted ? 'Add to Restricted Receipt' : 'Add to Receipt';
+          const btnClass = category.restricted ? 'small-btn restricted' : 'small-btn';
+          cards.push(`
+            <article class="item-card">
+              <div class="item-top">
+                <div>
+                  <h4>${escapeHtml(item.name)}</h4>
+                  ${category.restricted ? '<div class="tag-restricted">Restricted item</div>' : ''}
+                </div>
+                <div class="price-tag">${peso(item.price)}</div>
+              </div>
+              <p>${escapeHtml(category.name)} category</p>
+              <div class="card-actions">
+                <button class="${btnClass}" onclick="addToReceipt('${encodeURIComponent(category.name)}','${encodeURIComponent(item.name)}')">${btnLabel}</button>
+                <button class="small-btn secondary" onclick="openEditItem('${encodeURIComponent(category.name)}','${encodeURIComponent(item.name)}')">Edit</button>
+              </div>
+            </article>
+          `);
+        });
+      });
+      itemsContainer.innerHTML=cards.join('');
+    }
+
+    function findItem(categoryName,itemName){
+      const categoryIndex=store.categories.findIndex(c=>c.name===categoryName);
+      if(categoryIndex===-1)return null;
+      const itemIndex=store.categories[categoryIndex].items.findIndex(i=>i.name===itemName);
+      if(itemIndex===-1)return null;
+      return {categoryIndex,itemIndex,item:store.categories[categoryIndex].items[itemIndex],category:store.categories[categoryIndex]};
+    }
+
+    function addToReceipt(categoryEncoded,itemEncoded){
+      const categoryName=decodeURIComponent(categoryEncoded);
+      const itemName=decodeURIComponent(itemEncoded);
+      const found=findItem(categoryName,itemName);
+      if(!found) return;
+      const existing=receipt.find(e=>e.categoryName===categoryName&&e.itemName===itemName);
+      if(existing){existing.quantity+=1;existing.price=found.item.price||0;existing.restricted=!!found.category.restricted}
+      else{receipt.push({categoryName,itemName,price:found.item.price||0,quantity:1,restricted:!!found.category.restricted})}
+      saveReceipt(); renderReceipt(); renderStats();
+    }
+
+    function buildListHtml(items, restrictedFlag){
+      if(!items.length){
+        return `<div class="empty">${restrictedFlag ? 'No restricted items yet.' : 'No regular items yet.'}</div>`;
+      }
+      return items.map((e,i)=>`
+        <div class="list-item">
+          <div class="list-item-top">
+            <div>
+              <h5>${escapeHtml(e.itemName)}</h5>
+              <small>${escapeHtml(e.categoryName)} • ${peso(e.price)} each</small>
+            </div>
+            <button class="danger-btn" onclick="removeReceiptItem(${getOriginalIndex(e)})">✕</button>
+          </div>
+          <div class="qty-row">
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="changeQty(${getOriginalIndex(e)},-1)">−</button>
+              <div class="qty-value">${e.quantity}</div>
+              <button class="qty-btn" onclick="changeQty(${getOriginalIndex(e)},1)">+</button>
+            </div>
+            <strong>${peso(e.price*e.quantity)}</strong>
+          </div>
+        </div>`).join('');
+    }
+
+    function getOriginalIndex(entry){
+      return receipt.findIndex(e=>e.categoryName===entry.categoryName&&e.itemName===entry.itemName&&e.restricted===entry.restricted);
+    }
+
+    function renderReceipt(){
+      const regularItems = receipt.filter(e=>!e.restricted);
+      const restrictedItems = receipt.filter(e=>e.restricted);
+      regularList.innerHTML = buildListHtml(regularItems, false);
+      restrictedList.innerHTML = buildListHtml(restrictedItems, true);
+
+      const regSub=regularItems.reduce((s,e)=>s+(e.price*e.quantity),0);
+      const resSub=restrictedItems.reduce((s,e)=>s+(e.price*e.quantity),0);
+      const qty=receipt.reduce((s,e)=>s+e.quantity,0);
+      regularSubtotal.textContent=peso(regSub);
+      restrictedSubtotal.textContent=peso(resSub);
+      totalQuantity.textContent=qty;
+      grandTotal.textContent=peso(regSub+resSub);
+      regularCountTop.textContent=regularItems.reduce((s,e)=>s+e.quantity,0);
+      restrictedCountTop.textContent=restrictedItems.reduce((s,e)=>s+e.quantity,0);
+      receiptText.textContent = buildReceiptText(regularItems, restrictedItems, regSub, resSub, qty);
+    }
+
+    function buildReceiptText(regularItems, restrictedItems, regSub, resSub, qty){
+      const lines = [];
+      lines.push("Tindahan ni Nemia");
+      lines.push("Owner: Nemia Teodosio");
+      lines.push("Address: 170 C. Arellano St. Malabon City");
+      lines.push("Number: 09100667046");
+      lines.push("GCash: 09100667046 - Maybellyn Teodosio");
+      lines.push("----------------------------------------");
+      lines.push("RECEIPT PREVIEW");
+      lines.push(`Date: ${new Date().toLocaleString()}`);
+      lines.push("");
+
+      lines.push("REGULAR ITEMS:");
+      if(regularItems.length){
+        regularItems.forEach(e=>lines.push(`${e.itemName} x${e.quantity} - ${peso(e.price*e.quantity)}`));
+      } else {
+        lines.push("None");
+      }
+      lines.push(`Regular subtotal: ${peso(regSub)}`);
+      lines.push("");
+
+      lines.push("RESTRICTED ITEMS:");
+      if(restrictedItems.length){
+        restrictedItems.forEach(e=>lines.push(`${e.itemName} x${e.quantity} - ${peso(e.price*e.quantity)}`));
+      } else {
+        lines.push("None");
+      }
+      lines.push(`Restricted subtotal: ${peso(resSub)}`);
+      lines.push("");
+      lines.push(`Total quantity: ${qty}`);
+      lines.push(`GRAND TOTAL: ${peso(regSub+resSub)}`);
+      return lines.join("\n");
+    }
+
+    function changeQty(i,d){
+      if(!receipt[i])return;
+      receipt[i].quantity+=d;
+      if(receipt[i].quantity<=0)receipt.splice(i,1);
+      saveReceipt(); renderReceipt(); renderStats();
+    }
+
+    function removeReceiptItem(i){receipt.splice(i,1);saveReceipt();renderReceipt();renderStats()}
+    function renderStats(){categoryCount.textContent=store.categories.length;itemCount.textContent=getAllItemsCount()}
+
+    function openAddItemModal(){
+      editingItemRef=null; modalTitle.textContent='Add Item'; itemNameInput.value=''; itemPriceInput.value=''; fillCategorySelect();
+      itemCategoryInput.value=activeCategory!=='Home'?activeCategory:store.categories[0]?.name||''; deleteItemBtn.classList.add('hidden'); itemModal.classList.add('active');
+    }
+
+    function openEditItem(categoryEncoded,itemEncoded){
+      const categoryName=decodeURIComponent(categoryEncoded), itemName=decodeURIComponent(itemEncoded);
+      const found=findItem(categoryName,itemName); if(!found)return;
+      editingItemRef={oldCategoryName:categoryName,oldItemName:itemName}; modalTitle.textContent='Edit Item'; fillCategorySelect();
+      itemNameInput.value=found.item.name; itemCategoryInput.value=categoryName; itemPriceInput.value=found.item.price;
+      deleteItemBtn.classList.remove('hidden'); itemModal.classList.add('active');
+    }
+
+    function saveItem(){
+      const name=itemNameInput.value.trim(), categoryName=itemCategoryInput.value, price=Number(itemPriceInput.value||0);
+      if(!name) return alert('Please enter item name.');
+      if(!categoryName) return alert('Please choose a category.');
+      if(editingItemRef){
+        const oldFound=findItem(editingItemRef.oldCategoryName,editingItemRef.oldItemName); if(!oldFound)return;
+        store.categories[oldFound.categoryIndex].items.splice(oldFound.itemIndex,1);
+        const newCategory=store.categories.find(c=>c.name===categoryName);
+        newCategory.items.push({name,price:Math.max(0,price)});
+        receipt.forEach(e=>{if(e.categoryName===editingItemRef.oldCategoryName&&e.itemName===editingItemRef.oldItemName){e.categoryName=categoryName;e.itemName=name;e.price=Math.max(0,price);e.restricted=!!newCategory.restricted}})
+      }else{
+        const category=store.categories.find(c=>c.name===categoryName);
+        const exists=category.items.some(i=>i.name.toLowerCase()===name.toLowerCase());
+        if(exists) return alert('Item already exists in this category.');
+        category.items.push({name,price:Math.max(0,price)});
+      }
+      saveStore(); saveReceipt(); closeItemModal(); renderAll();
+    }
+
+    function deleteItem(){
+      if(!editingItemRef)return;
+      const found=findItem(editingItemRef.oldCategoryName,editingItemRef.oldItemName); if(!found)return;
+      store.categories[found.categoryIndex].items.splice(found.itemIndex,1);
+      receipt=receipt.filter(e=>!(e.categoryName===editingItemRef.oldCategoryName&&e.itemName===editingItemRef.oldItemName));
+      saveStore(); saveReceipt(); closeItemModal(); renderAll();
+    }
+
+    function closeItemModal(){itemModal.classList.remove('active')}
+    function openCategoryModal(){categoryNameInput.value='';categoryIconInput.value='';categoryTypeInput.value='regular';categoryModal.classList.add('active')}
+    function saveCategory(){
+      const name=categoryNameInput.value.trim(), icon=categoryIconInput.value.trim()||'📦', restricted=categoryTypeInput.value==='restricted';
+      if(!name) return alert('Please enter category name.');
+      const exists=store.categories.some(c=>c.name.toLowerCase()===name.toLowerCase());
+      if(exists) return alert('Category already exists.');
+      store.categories.push({name,icon,restricted,items:[]});
+      saveStore(); categoryModal.classList.remove('active'); activeCategory=name; renderAll();
+    }
+
+    function clearAll(){receipt=[];saveReceipt();renderReceipt();renderStats()}
+    function exportData(){
+      const payload={store,receipt,exportedAt:new Date().toISOString(),receiptText:receiptText.textContent};
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='tindahan-ni-nemia-receipt-data.json'; a.click(); URL.revokeObjectURL(url);
+    }
+    function importData(file){
+      const reader=new FileReader();
+      reader.onload=(e)=>{try{
+        const parsed=JSON.parse(e.target.result); if(!parsed.store||!parsed.store.categories) return alert('Invalid file format.');
+        store=parsed.store; receipt=Array.isArray(parsed.receipt)?parsed.receipt:[]; saveStore(); saveReceipt(); activeCategory='Home'; renderAll(); alert('Data imported successfully.');
+      }catch{alert('Could not import file.')}}; reader.readAsText(file);
+    }
+
+    function renderAll(){fillCategorySelect();renderSidebar();renderItems();renderReceipt();renderStats()}
+    window.addToReceipt=addToReceipt; window.openEditItem=openEditItem; window.changeQty=changeQty; window.removeReceiptItem=removeReceiptItem; window.scrollToSection=scrollToSection; window.toggleGcashRates=toggleGcashRates;
+    addCategoryBtn.addEventListener('click',openCategoryModal); addItemBtn.addEventListener('click',openAddItemModal); exportBtn.addEventListener('click',exportData);
+    importBtn.addEventListener('click',()=>importFile.click()); importFile.addEventListener('change',(e)=>{const file=e.target.files[0]; if(file)importData(file); e.target.value='';});
+    resetBtn.addEventListener('click',()=>{searchInput.value='';activeCategory='Home';renderAll()}); showAllBtn.addEventListener('click',()=>{activeCategory='Home';renderAll()});
+    searchInput.addEventListener('input',renderItems); clearAllBtn.addEventListener('click',clearAll); saveDataBtn.addEventListener('click',()=>{saveStore();saveReceipt();alert('Data saved on this browser/device.')});
+    cancelItemModal.addEventListener('click',closeItemModal); saveItemModal.addEventListener('click',saveItem); deleteItemBtn.addEventListener('click',deleteItem);
+    cancelCategoryModal.addEventListener('click',()=>categoryModal.classList.remove('active')); saveCategoryModal.addEventListener('click',saveCategory);
+    itemModal.addEventListener('click',(e)=>{if(e.target===itemModal)closeItemModal()}); categoryModal.addEventListener('click',(e)=>{if(e.target===categoryModal)categoryModal.classList.remove('active')});
+    renderAll();
+  </script>
+</body>
+</html>
