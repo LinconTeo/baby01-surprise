@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lincon practice system</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#eef5ff;color:#0f172a}
+.top{position:sticky;top:0;z-index:10;background:#2563eb;color:white;padding:10px 10px 8px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.title{font-weight:700;font-size:18px}
+.search{width:100%;padding:12px 14px;border:none;border-radius:12px;margin-top:8px;font-size:15px}
+.summary{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:13px;opacity:.95}
+.chips{display:flex;gap:8px;overflow:auto;padding:10px 10px 0;background:#eef5ff;position:sticky;top:86px;z-index:9}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;border:none;background:white;border-radius:999px;padding:9px 12px;font-size:13px;color:#2563eb}
+.chip.active{background:#2563eb;color:white}
+.container{padding:10px 10px 110px}
+.item{background:white;margin-bottom:10px;padding:12px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 4px 10px rgba(37,99,235,.08)}
+.item-name{font-size:14px;font-weight:600}
+.item-cat{font-size:11px;color:#64748b;margin-top:3px}
+.right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.price{font-weight:700;color:#2563eb;font-size:14px}
+button.add{padding:9px 12px;border:none;border-radius:10px;background:#2563eb;color:white;font-weight:700}
+.empty{text-align:center;color:#64748b;padding:30px 10px}
+.cart{position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid #2563eb;padding:10px;box-shadow:0 -6px 20px rgba(0,0,0,.08)}
+.cart-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.total{font-size:18px;font-weight:700;color:#2563eb}
+.actions{display:flex;gap:8px;margin-top:8px}
+.actions button{flex:1;padding:10px;border:none;border-radius:10px;font-weight:700}
+.view{background:#2563eb;color:white}
+.clear{background:#e2e8f0;color:#0f172a}
+.utang{background:#f59e0b;color:white}
+.save{background:#16a34a;color:white}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-end;z-index:20}
+.modal.show{display:flex}
+.sheet{background:white;width:100%;max-height:85vh;border-radius:18px 18px 0 0;padding:14px;overflow:auto}
+.sheet h3{margin:0 0 10px}
+.cart-item{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #e2e8f0}
+.cart-name{font-size:14px;font-weight:600}
+.cart-sub{font-size:12px;color:#64748b;margin-top:2px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:28px;height:28px;border:none;border-radius:8px;background:#dbeafe;color:#1d4ed8;font-weight:700}
+.close{margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:#2563eb;color:white;font-weight:700}
+.saved-box{margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0}
+.saved-item{background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:10px;margin-bottom:10px}
+.saved-title{font-size:13px;font-weight:700}
+.saved-sub{font-size:12px;color:#64748b;margin-top:4px;white-space:pre-wrap}
+.name{width:100%;padding:10px 12px;margin:8px 0;border:1px solid #cbd5e1;border-radius:10px}
+.saved-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.saved-actions button,.saved-actions a{padding:8px 10px;border:none;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-block}
+.preview{background:#2563eb;color:white}
+.download{background:#0f766e;color:white}
+.delete{background:#dc2626;color:white}
+.thumb{width:100%;max-width:180px;border-radius:10px;border:1px solid #dbeafe;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="title">lincon practice system</div>
+  <input id="search" class="search" placeholder="Search item...">
+  <div class="summary">
+    <span id="countLabel">0 items</span>
+    <span id="qtyLabel">0 qty</span>
+  </div>
+</div>
+
+<div class="chips" id="chips"></div>
+<div class="container" id="list"></div>
+
+<div class="cart">
+  <div class="cart-top">
+    <div>
+      <div style="font-size:12px;color:#64748b">Total</div>
+      <div class="total">₱<span id="total">0</span></div>
+    </div>
+    <div style="font-size:12px;color:#64748b;text-align:right">
+      <div id="cartItemsLabel">0 items in receipt</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="view" onclick="openCart()">View Receipt</button>
+    <button class="clear" onclick="clearCart()">Clear</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h3>Receipt</h3>
+    <div id="cartList"></div>
+
+    <input class="name" id="sinoUtang" placeholder="Sino Umutang:">
+    <input class="name" id="pinautang" placeholder="Pinautang Ni:">
+
+    <div class="actions">
+      <button class="save" onclick="saveReceipt('completed')">Save Receipt Completed</button>
+      <button class="utang" onclick="saveReceipt('utang')">Save Receipt Utang</button>
+    </div>
+
+    <div class="saved-box">
+      <h3 style="margin-top:14px">Saved Receipts</h3>
+      <div id="savedReceipts"></div>
+    </div>
+
+    <button class="close" onclick="closeCart()">Close</button>
+  </div>
+</div>
+
+<div class="modal" id="imageModal">
+  <div class="sheet" style="max-height:90vh">
+    <h3>Receipt Image Preview</h3>
+    <img id="previewImg" style="width:100%;border-radius:12px;border:1px solid #dbeafe" alt="Receipt preview">
+    <button class="close" onclick="closeImagePreview()">Close</button>
+  </div>
+</div>
+
+<script>
+const items = [{"name": "Kopiko Blanca", "price": 17, "category": "Powdered Drinks"}, {"name": "Kopiko Brown", "price": 17, "category": "Powdered Drinks"}, {"name": "Kopiko Black", "price": 17, "category": "Powdered Drinks"}, {"name": "Greataste White", "price": 17, "category": "Powdered Drinks"}, {"name": "Greattaste Choco", "price": 17, "category": "Powdered Drinks"}, {"name": "Tang Orange", "price": 25, "category": "Powdered Drinks"}, {"name": "Nescafe Creamy White", "price": 18, "category": "Powdered Drinks"}, {"name": "Nescafe Original", "price": 18, "category": "Powdered Drinks"}, {"name": "Nescafe Classic Stick", "price": 5, "category": "Powdered Drinks"}, {"name": "Bearbrand", "price": 16, "category": "Powdered Drinks"}, {"name": "Milo", "price": 13, "category": "Powdered Drinks"}, {"name": "Energen", "price": 13, "category": "Powdered Drinks"}, {"name": "Cheezee", "price": 10, "category": "Dressing"}, {"name": "Ladys Choice Chicken Spread", "price": 16, "category": "Dressing"}, {"name": "Ladys Choice Bacon Spread", "price": 16, "category": "Dressing"}, {"name": "Keratin Gold", "price": 10, "category": "Powder and Soap"}, {"name": "Sunsilk Shampoo", "price": 10, "category": "Powder and Soap"}, {"name": "Head & Shoulders", "price": 10, "category": "Powder and Soap"}, {"name": "Clear", "price": 10, "category": "Powder and Soap"}, {"name": "Dove Shampoo", "price": 10, "category": "Powder and Soap"}, {"name": "Pantene", "price": 10, "category": "Powder and Soap"}, {"name": "Colgate", "price": 12, "category": "Powder and Soap"}, {"name": "Closeup", "price": 12, "category": "Powder and Soap"}, {"name": "Surf Powder", "price": 10, "category": "Powder and Soap"}, {"name": "Ariel Duo", "price": 20, "category": "Powder and Soap"}, {"name": "Downy Solo", "price": 10, "category": "Powder and Soap"}, {"name": "Downy 3X", "price": 22, "category": "Powder and Soap"}, {"name": "Zonrox 1000 ML Big", "price": 48, "category": "Powder and Soap"}, {"name": "Joy Sachet Solo", "price": 15, "category": "Powder and Soap"}, {"name": "Safeguard Pink", "price": 25, "category": "Powder and Soap"}, {"name": "Safeguard White", "price": 25, "category": "Powder and Soap"}, {"name": "Silka Orange", "price": 25, "category": "Powder and Soap"}, {"name": "Irish Spring", "price": 45, "category": "Powder and Soap"}, {"name": "LabLast Laundry Detergent Bar", "price": 12, "category": "Powder and Soap"}, {"name": "Rexona Pink", "price": 10, "category": "Powder and Soap"}, {"name": "Off Lotion", "price": 15, "category": "Powder and Soap"}, {"name": "Hair Wax", "price": 10, "category": "Powder and Soap"}, {"name": "Toothbrush", "price": 30, "category": "Powder and Soap"}, {"name": "Tawas", "price": 22, "category": "Powder and Soap"}, {"name": "Knorr Cubes", "price": 9, "category": "Condiments"}, {"name": "Sinigang Mix Gabi", "price": 20, "category": "Condiments"}, {"name": "Mama Sitas Oyster Sauce", "price": 9, "category": "Condiments"}, {"name": "Magic Sarap", "price": 6, "category": "Condiments"}, {"name": "Betchin", "price": 5, "category": "Condiments"}, {"name": "Sugar Brown", "price": 23, "category": "Condiments"}, {"name": "Sugar White", "price": 25, "category": "Condiments"}, {"name": "Spring Oil Sanchet 40ML", "price": 12, "category": "Condiments"}, {"name": "Vegetable Oil 200ML", "price": 30, "category": "Condiments"}, {"name": "Datu Puti 200 ML", "price": 12, "category": "Condiments"}, {"name": "Silver Swan Suka", "price": 14, "category": "Condiments"}, {"name": "Silver Swan Soy Sauce", "price": 15, "category": "Condiments"}, {"name": "Rajah Puro Patis", "price": 15, "category": "Condiments"}, {"name": "Salted Black Beans", "price": 30, "category": "Condiments"}, {"name": "Fresh Gata", "price": 40, "category": "Condiments"}, {"name": "Original Tomato Sauce 250G", "price": 35, "category": "Condiments"}, {"name": "Philips Peas", "price": 25, "category": "Condiments"}, {"name": "Whole Corn Kernels", "price": 50, "category": "Condiments"}, {"name": "Ketchup Bottle", "price": 35, "category": "Condiments"}, {"name": "Alaska Evaporada 360ML", "price": 42, "category": "Condiments"}, {"name": "Kulina Vinegar 1L", "price": 38, "category": "Condiments"}, {"name": "MaLing", "price": 100, "category": "Canned Foods"}, {"name": "MrSquirrel Luncheon Meat", "price": 100, "category": "Canned Foods"}, {"name": "Fresca Tuna", "price": 35, "category": "Canned Foods"}, {"name": "Tuna Afritada", "price": 36, "category": "Canned Foods"}, {"name": "Tuna Caldereta", "price": 36, "category": "Canned Foods"}, {"name": "Mega Sardines", "price": 30, "category": "Canned Foods"}, {"name": "Angentina Corned Beef 150 Grams", "price": 42, "category": "Canned Foods"}, {"name": "Blue Bay Corned Tuna 85g", "price": 35, "category": "Canned Foods"}, {"name": "Blue Bay Corned Tuna 150g", "price": 40, "category": "Canned Foods"}, {"name": "Gin Bilog", "price": 85, "category": "Alcohol Drinks"}, {"name": "Redhorse Small", "price": 70, "category": "Alcohol Drinks"}, {"name": "Redhorse Big", "price": 140, "category": "Alcohol Drinks"}, {"name": "Alfonso Light", "price": 315, "category": "Alcohol Drinks"}, {"name": "Emperandor Light 1Liter", "price": 195, "category": "Alcohol Drinks"}, {"name": "Wilkins Water 1L", "price": 25, "category": "Water"}, {"name": "Wilkins Water 500ML", "price": 15, "category": "Water"}, {"name": "Boyet Water Small", "price": 20, "category": "Water"}, {"name": "Boyet Water Big", "price": 12, "category": "Water"}, {"name": "Sting", "price": 26, "category": "Energy Drink"}, {"name": "Cobra Glass Bottle", "price": 28, "category": "Energy Drink"}, {"name": "Cobra Plastic Bottle", "price": 20, "category": "Energy Drink"}, {"name": "Coca Cola Coke Mismo", "price": 22, "category": "Carbohydrates Drink"}, {"name": "Coca Cola Sprite Mismo", "price": 22, "category": "Carbohydrates Drink"}, {"name": "Coca Cola Royal Mismo", "price": 22, "category": "Carbohydrates Drink"}, {"name": "Mountain Dew", "price": 22, "category": "Carbohydrates Drink"}, {"name": "Coca Cola 1.5 Liters", "price": 80, "category": "Carbohydrates Drink"}, {"name": "Coke Kasalo", "price": 38, "category": "Carbohydrates Drink"}, {"name": "Pancit Canton", "price": 18, "category": "Noodles"}, {"name": "Lucky Me Noodles", "price": 13, "category": "Noodles"}, {"name": "Lucky Me Labuyo", "price": 14, "category": "Noodles"}, {"name": "Nissin Ramen Seafood", "price": 18, "category": "Noodles"}, {"name": "Nissin CupNoodles", "price": 30, "category": "Noodles"}, {"name": "Marlboro", "price": 11, "category": "Cigarettes"}, {"name": "Camel", "price": 10, "category": "Cigarettes"}, {"name": "Fortune", "price": 10, "category": "Cigarettes"}, {"name": "Mighty", "price": 10, "category": "Cigarettes"}, {"name": "Winston", "price": 12, "category": "Cigarettes"}, {"name": "Chesterfield", "price": 9, "category": "Cigarettes"}, {"name": "Concord", "price": 7, "category": "Cigarettes"}, {"name": "Combi", "price": 8, "category": "Tinapay"}, {"name": "Bingo", "price": 8, "category": "Tinapay"}, {"name": "Lava Cake", "price": 11, "category": "Tinapay"}, {"name": "Fudgee Bar", "price": 11, "category": "Tinapay"}, {"name": "Cookies Bites", "price": 10, "category": "Tinapay"}, {"name": "Bravo", "price": 8, "category": "Tinapay"}, {"name": "Rebisco Strawberry", "price": 8, "category": "Tinapay"}, {"name": "Cheese Cake", "price": 11, "category": "Tinapay"}, {"name": "Cream O", "price": 9, "category": "Tinapay"}, {"name": "Magic Flakes Cheese", "price": 8, "category": "Tinapay"}, {"name": "Hiro", "price": 8, "category": "Tinapay"}, {"name": "Skyflakes", "price": 8, "category": "Tinapay"}, {"name": "Richeese Wafer", "price": 9, "category": "Tinapay"}, {"name": "Mani", "price": 5, "category": "Mani"}, {"name": "Super Crunch Chip Charon", "price": 15, "category": "Mani"}, {"name": "Vcut", "price": 20, "category": "Mani"}, {"name": "Piattos", "price": 20, "category": "Mani"}, {"name": "Nova", "price": 20, "category": "Mani"}, {"name": "Cheese Rings", "price": 10, "category": "Mani"}, {"name": "Clover", "price": 10, "category": "Mani"}, {"name": "Moby", "price": 10, "category": "Mani"}, {"name": "Loaded", "price": 10, "category": "Mani"}];
+let activeCategory = "All";
+let cart = [];
+let savedReceipts = JSON.parse(localStorage.getItem("lincon_practice_saved_receipts_v3") || "[]");
+const categories = ["All", ...new Set(items.map(i => i.category))];
+
+function peso(n) {
+  return Number(n).toLocaleString('en-PH');
+}
+
+function esc(text) {
+  return String(text).replace(/'/g, "\\'");
+}
+
+function renderChips() {
+  document.getElementById("chips").innerHTML = categories.map(cat => `
+    <button class="chip ${activeCategory===cat?'active':''}" onclick="setCategory('${esc(cat)}')">${cat}</button>
+  `).join("");
+}
+
+function filteredItems() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  return items.filter(i => {
+    const matchCategory = activeCategory === "All" || i.category === activeCategory;
+    const matchSearch = i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
+    return matchCategory && matchSearch;
+  });
+}
+
+function renderList() {
+  const list = filteredItems();
+  document.getElementById("list").innerHTML = list.length ? list.map(i => `
+    <div class="item">
+      <div>
+        <div class="item-name">${i.name}</div>
+        <div class="item-cat">${i.category}</div>
+      </div>
+      <div class="right">
+        <div class="price">₱${peso(i.price)}</div>
+        <button class="add" onclick="addItem('${esc(i.name)}')">Add</button>
+      </div>
+    </div>
+  `).join("") : `<div class="empty">No items found.</div>`;
+}
+
+function addItem(name) {
+  const item = items.find(i => i.name === name);
+  const existing = cart.find(c => c.name === name);
+  if (existing) existing.qty += 1;
+  else cart.push({...item, qty: 1});
+  updateCart();
+}
+
+function buildReceiptText(data, status, sino="", pinautang="") {
+  const total = data.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const qty = data.reduce((sum, i) => sum + i.qty, 0);
+  const lines = [];
+  lines.push("lincon practice system");
+  lines.push("Status: " + status.toUpperCase());
+  if (status === "utang") {
+    lines.push("Sino Umutang: " + sino);
+    lines.push("Pinautang Ni: " + pinautang);
+  }
+  lines.push("Date: " + new Date().toLocaleString());
+  lines.push("----------------------------");
+  data.forEach(i => lines.push(`${i.name} x${i.qty} = ₱${peso(i.price * i.qty)}`));
+  lines.push("----------------------------");
+  lines.push("Total Qty: " + qty);
+  lines.push("Grand Total: ₱" + peso(total));
+  return lines.join("\n");
+}
+
+function generateReceiptImage(text) {
+  const lines = text.split("\n");
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const width = 700;
+  const lineHeight = 34;
+  const padding = 30;
+  canvas.width = width;
+  canvas.height = padding * 2 + lines.length * lineHeight + 20;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#2563eb";
+  ctx.fillRect(0, 0, canvas.width, 70);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 28px Arial";
+  ctx.fillText("lincon practice system", 24, 42);
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "22px Arial";
+  let y = 100;
+  lines.forEach(line => {
+    ctx.fillText(line, 24, y);
+    y += lineHeight;
+  });
+
+  return canvas.toDataURL("image/png");
+}
+
+function saveReceipt(status) {
+  if (!cart.length) {
+    alert("Receipt is empty.");
+    return;
+  }
+
+  const sino = document.getElementById("sinoUtang").value.trim();
+  const pinautang = document.getElementById("pinautang").value.trim();
+
+  if (status === "utang" && (!sino || !pinautang)) {
+    alert("Lagyan muna ng Sino Umutang at Pinautang Ni.");
+    return;
+  }
+
+  const text = buildReceiptText(cart, status, sino, pinautang);
+  const image = generateReceiptImage(text);
+
+  const entry = {
+    id: Date.now(),
+    status,
+    sino,
+    pinautang,
+    total: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+    qty: cart.reduce((sum, i) => sum + i.qty, 0),
+    text,
+    image
+  };
+
+  savedReceipts.unshift(entry);
+  localStorage.setItem("lincon_practice_saved_receipts_v3", JSON.stringify(savedReceipts));
+  renderSavedReceipts();
+  alert(status === "utang" ? "Utang receipt saved." : "Completed receipt saved.");
+  cart = [];
+  updateCart();
+}
+
+function renderSavedReceipts() {
+  const box = document.getElementById("savedReceipts");
+  box.innerHTML = savedReceipts.length ? savedReceipts.map(r => `
+    <div class="saved-item">
+      <div class="saved-title">${r.status === 'utang' ? 'Utang' : 'Completed'} • ₱${peso(r.total)}</div>
+      <div class="saved-sub">${r.text}</div>
+      <img class="thumb" src="${r.image}" alt="Receipt image">
+      <div class="saved-actions">
+        <button class="preview" onclick="previewImage(${r.id})">View Image</button>
+        <a class="download" href="${r.image}" download="receipt-${r.id}.png">Download Image</a>
+        <button class="delete" onclick="deleteSaved(${r.id})">Delete</button>
+      </div>
+    </div>
+  `).join("") : `<div class="empty">No saved receipts yet.</div>`;
+}
+
+function previewImage(id) {
+  const found = savedReceipts.find(r => r.id === id);
+  if (!found) return;
+  document.getElementById("previewImg").src = found.image;
+  document.getElementById("imageModal").classList.add("show");
+}
+
+function closeImagePreview() {
+  document.getElementById("imageModal").classList.remove("show");
+}
+
+function deleteSaved(id) {
+  savedReceipts = savedReceipts.filter(r => r.id !== id);
+  localStorage.setItem("lincon_practice_saved_receipts_v3", JSON.stringify(savedReceipts));
+  renderSavedReceipts();
+}
+
+function updateCart() {
+  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const qty = cart.reduce((sum, i) => sum + i.qty, 0);
+  document.getElementById("total").innerText = peso(total);
+  document.getElementById("qtyLabel").innerText = qty + " qty";
+  document.getElementById("countLabel").innerText = filteredItems().length + " items";
+  document.getElementById("cartItemsLabel").innerText = cart.length + " items in receipt";
+
+  document.getElementById("cartList").innerHTML = cart.length ? cart.map((i, idx) => `
+    <div class="cart-item">
+      <div>
+        <div class="cart-name">${i.name}</div>
+        <div class="cart-sub">${i.category} • ₱${peso(i.price)} each</div>
+      </div>
+      <div style="text-align:right">
+        <div class="qty">
+          <button onclick="changeQty(${idx}, -1)">-</button>
+          <span>${i.qty}</span>
+          <button onclick="changeQty(${idx}, 1)">+</button>
+        </div>
+        <div style="margin-top:6px;font-weight:700">₱${peso(i.price * i.qty)}</div>
+      </div>
+    </div>
+  `).join("") : `<div class="empty">Receipt is empty.</div>`;
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateCart();
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  renderChips();
+  renderList();
+  updateCart();
+}
+
+function clearCart() {
+  cart = [];
+  updateCart();
+}
+
+function openCart() {
+  document.getElementById("modal").classList.add("show");
+  renderSavedReceipts();
+}
+
+function closeCart() {
+  document.getElementById("modal").classList.remove("show");
+}
+
+document.getElementById("search").addEventListener("input", () => {
+  renderList();
+  updateCart();
+});
+
+document.getElementById("modal").addEventListener("click", (e) => {
+  if (e.target.id === "modal") closeCart();
+});
+document.getElementById("imageModal").addEventListener("click", (e) => {
+  if (e.target.id === "imageModal") closeImagePreview();
+});
+
+renderChips();
+renderList();
+updateCart();
+renderSavedReceipts();
+</script>
+</body>
+</html>
